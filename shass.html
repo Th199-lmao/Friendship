@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Shass — Demo Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fff4ea;--card:#fffefc;--accent:#c97f4d;--glass:rgba(255,255,255,0.04);--paw:#8b5a3c}
+    html,body{height:100%;margin:0;font-family:'Quicksand',Arial,sans-serif;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><g fill='%238b5a3c' fill-opacity='0.12'><circle cx='35' cy='45' r='12'/><circle cx='70' cy='28' r='11'/><circle cx='105' cy='45' r='12'/><circle cx='70' cy='78' r='22'/></g></svg>"), linear-gradient(180deg,var(--bg),#ffecd6);background-repeat:repeat,no-repeat;background-size:140px 140px,cover;color:#382414}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px}
+    .card{position:relative;width:520px;max-width:92%;background:linear-gradient(180deg,#000000,#0d0d0d);border-radius:14px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,0.6);backdrop-filter:blur(6px);color:#ffffff;border:1px solid rgba(255,255,255,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0 0 18px 0;color:#cfe8ff}
+    .controls{display:flex;gap:12px}
+    .btn{flex:1;padding:12px 14px;border-radius:10px;border:0;background:linear-gradient(180deg,var(--accent),#1762d6);color:#fff;font-weight:600;cursor:pointer}
+    .muted{font-size:13px;color:#9fb7d9;margin-top:14px;text-align:center}
+    /* Auth-specific */
+    .auth{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+    .auth h1{font-size:22px;margin:0;color:#eaf4ff}
+    .auth input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff;font-size:16px;outline:none}
+    .auth input:focus{box-shadow:0 8px 30px rgba(43,140,255,0.12);border-color:rgba(43,140,255,0.18)}
+    .greeting{display:none;align-items:center;justify-content:center;font-size:96px;font-weight:700;color:#fff;height:220px}
+    .question{display:none;flex-direction:column;gap:12px;align-items:stretch}
+    .choices{display:flex;gap:10px;flex-wrap:wrap}
+    .choice-btn{flex:1;padding:12px;border-radius:10px;border:0;background:rgba(255,255,255,0.04);color:#eaf4ff;cursor:pointer;font-weight:600}
+    .choice-btn.correct{background:linear-gradient(180deg,#2b8cff,#1762d6)}
+    .choice-btn:focus{outline:3px solid rgba(43,140,255,0.12)}
+    /* badge removed */
+    @media (max-width:420px){ .card{padding:18px} h1{font-size:22px} .greeting{font-size:48px} }
+    /* hi.html scoped styles (scoped under #hiContent) */
+    #hiContent .wrap{max-width:960px;padding:28px 22px;text-align:center;margin:0 auto;gap:18px;box-shadow:0 12px 40px rgba(10,40,80,0.06);background:rgba(240,250,255,0.94);border:1px solid rgba(10,60,110,0.04);backdrop-filter:blur(6px);border-radius:14px;max-height:80vh;overflow:auto;position:relative;z-index:2;margin-top:18px}
+    #hiContent .hi{font-size:48px;font-weight:800;color:#073b66;margin:0 0 8px}
+    #hiContent .message{margin:0;color:#1b4960;font-size:16px;line-height:1.85;max-width:860px;text-align:justify;letter-spacing:0.2px}
+    #hiContent .image-left{display:flex;justify-content:center;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-top:18px}
+    #hiContent .image-left img{max-width:320px;max-height:320px;object-fit:cover;border-radius:10px;box-shadow:0 10px 30px rgba(10,50,100,0.08);border:1px solid rgba(10,60,110,0.04)}
+    #hiContent .decor-left,#hiContent .decor-right{position:fixed;bottom:10vh;width:260px;height:260px;opacity:0.12;pointer-events:none;z-index:1;filter:drop-shadow(0 10px 30px rgba(10,40,80,0.06));transform-origin:center}
+    #hiContent .decor-left{left:6vw;transform:translateX(-6vw) rotate(-6deg)}
+    #hiContent .decor-right{right:6vw;transform:translateX(6vw) rotate(6deg)}
+    #hiContent #sakuraIntro{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#071428,#081827);z-index:9999}
+    #hiContent .spacer{display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main">
+      <div id="authBox">
+        <div class="auth">
+          <h1>Enter Password</h1>
+          <input id="passwordField" type="password" placeholder="Password" autocomplete="off" aria-label="Password" />
+          <button id="submitBtn" class="btn">Submit</button>
+        </div>
+      </div>
+      <div id="questionBox" class="question" aria-hidden="true">
+        <h1>Question 1 — Which color?</h1>
+        <p class="muted">Choose the color you prefer.</p>
+        <div class="choices">
+          <button class="choice-btn" data-color="Pink">Pink</button>
+          <button class="choice-btn" data-color="Blue">Blue</button>
+          <button class="choice-btn" data-color="White">White</button>
+          <button class="choice-btn" data-color="Green">Green</button>
+        </div>
+      </div>
+      <div id="animalBox" class="question" aria-hidden="true">
+        <h1>Question 2 — Which animal?</h1>
+        <div class="choices">
+          <button class="choice-btn animal-btn" data-animal="Hamster">Hamster</button>
+          <button class="choice-btn animal-btn" data-animal="Dog">Dog</button>
+          <button class="choice-btn animal-btn" data-animal="Cat">Cat</button>
+          <button class="choice-btn animal-btn" data-animal="Pig">Pig</button>
+        </div>
+      </div>
+      <div id="timeBox" class="question" aria-hidden="true">
+        <h1>Question 3 — What time was the person born?</h1>
+        <div class="choices">
+          <button class="choice-btn time-btn" data-time="8:09">8:09</button>
+          <button class="choice-btn time-btn" data-time="8:55">8:55</button>
+          <button class="choice-btn time-btn" data-time="7:55">7:55</button>
+          <button class="choice-btn time-btn" data-time="7:09">7:09</button>
+        </div>
+      </div>
+      <div id="heightBox" class="question" aria-hidden="true">
+        <h1>Question 4 — What is the height? (type your answer in cm)</h1>
+        <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+          <input id="heightInput" type="number" placeholder="e.g. 190" style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff;outline:none" aria-label="Height in cm" />
+          <button id="heightSubmit" class="btn">Submit</button>
+        </div>
+      </div>
+      <div id="peopleBox" class="question" aria-hidden="true">
+        <h1>Question 5 — ชาช่ามีคนคุยกี่คน?</h1>
+        <div class="choices">
+          <button class="choice-btn people-btn" data-people="0">0</button>
+          <button class="choice-btn people-btn" data-people="1">1</button>
+          <button class="choice-btn people-btn" data-people="2">2</button>
+          <button class="choice-btn people-btn" data-people="3">3</button>
+        </div>
+      </div>
+      <div id="nameBox" class="question" aria-hidden="true">
+        <h1>Question 6 — What did sun call shasha?</h1>
+        <div class="choices">
+          <button class="choice-btn name-btn" data-name="ชาช่า">ชาช่า</button>
+          <button class="choice-btn name-btn" data-name="ชาช่าง">ชาช่าง</button>
+          <button class="choice-btn name-btn" data-name="ชาช้า">ชาช้า</button>
+          <button class="choice-btn name-btn" data-name="ช่า">ช่า</button>
+        </div>
+      </div>
+      <div id="crushBox" class="question" aria-hidden="true">
+        <h1>Question 7 — เค้าแอบไปรู้มาว่าชาช่าเคยชอบใคร โปรดพิม</h1>
+        <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+          <input id="crushInput" type="text" placeholder="พิมชื่อที่ชอบ..." style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff;outline:none" aria-label="ชื่อที่ชอบ" />
+          <button id="crushSubmit" class="btn">Submit</button>
+        </div>
+      </div>
+      <div id="greeting" class="greeting" aria-hidden="true">Hi</div>
+    </main>
+    <!-- embedded hi content (shows after quiz instead of navigating to external hi.html) -->
+    <div id="hiContent" style="display:none; width:100%">
+      <div id="sakuraIntro" aria-hidden="true" style="display:flex;align-items:center;justify-content:center;">
+        <svg id="sakuraSvg" width="420" height="420" viewBox="0 0 420 420" xmlns="http://www.w3.org/2000/svg" aria-label="sakura intro">
+          <defs>
+            <radialGradient id="petalGrad" cx="40%" cy="20%" r="70%">
+              <stop offset="0%" stop-color="#fff0f4" stop-opacity="1"/>
+              <stop offset="45%" stop-color="#FFB7C5" stop-opacity="0.98"/>
+              <stop offset="100%" stop-color="#FF9FB8" stop-opacity="0.95"/>
+            </radialGradient>
+            <radialGradient id="petalGradAlt" cx="40%" cy="18%" r="70%">
+              <stop offset="0%" stop-color="#fff5f7" stop-opacity="0.98"/>
+              <stop offset="45%" stop-color="#FFD7DF" stop-opacity="0.96"/>
+              <stop offset="100%" stop-color="#FFB0C0" stop-opacity="0.9"/>
+            </radialGradient>
+            <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="8" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+          <g id="sakuraGroup" transform="translate(210,210)">
+            <path id="petalTemplate" d="M0,-48 C14,-46 34,-30 30,-6 C26,10 6,30 0,36 C-6,30 -26,10 -30,-6 C-34,-30 -14,-46 0,-48 Z" fill="url(#petalGrad)" fill-opacity="0.98" stroke="none" filter="url(#softGlow)"/>
+            <circle id="centerGlow" cx="0" cy="0" r="10" fill="#FFE9F0" opacity="0.0" filter="url(#softGlow)"/>
+          </g>
+        </svg>
+      </div>
+      <div class="decor-left" aria-hidden="true">
+        <svg viewBox="0 0 200 200" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="100" cy="100" r="70" fill="#ffffff" />
+          <ellipse cx="70" cy="80" rx="18" ry="26" fill="#111" />
+          <ellipse cx="130" cy="80" rx="18" ry="26" fill="#111" />
+          <circle cx="70" cy="80" r="6" fill="#fff" />
+          <circle cx="130" cy="80" r="6" fill="#fff" />
+          <ellipse cx="100" cy="120" rx="36" ry="26" fill="#000" opacity="0.06" />
+          <path d="M88 120 q12 12 24 0" stroke="#6b6b6b" stroke-width="3" fill="none" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="decor-right" aria-hidden="true">
+        <svg viewBox="0 0 200 200" width="260" height="260" xmlns="http://www.w3.org/2000/svg">
+          <path d="M40,110 C40,70 80,40 120,48 C150,54 170,84 158,110 C154,122 136,132 120,132 C100,132 86,126 70,132 C56,137 40,128 40,110 Z" fill="#ffd9d1"/>
+          <circle cx="135" cy="90" r="6" fill="#6b4b36" />
+          <circle cx="110" cy="92" r="8" fill="#6b4b36" />
+          <path d="M70 108 q10 10 20 0" stroke="#6b4b36" stroke-width="2" fill="none" stroke-linecap="round" />
+        </svg>
+      </div>
+      <div class="wrap">
+        <div class="hi">Hiชาช่าง</div>
+        <p class="message">แกไม่ต้องทำอะไรให้เค้าเยอะแยะหรอก สายวิศวะก็ต้องเขียนfriendshipแบบนี้ ชาช่าเราก็รู้จักกันมา 3 ปี แกเป็นคนโคตรเก่งทำไรก็ได้เยอะมากเสมอ เก่งเกิน เก่งจริงสอบก็ได้เยอะตลอดเค้าไม่เคยได้เยอะกว่าเลย ก็อยากบอกว่ารู้สึกขอบคุณมากที่ชาช่างค่อยให้เค้าดูงาน ช่วยงาน เค้า ก็ตอนม4 เค้าไม่รู้ว่าตัวเองทำไรลงไป เค้าอาจจะแบบรังเกียดคนอื่นตอนนั้นเรียกว่าไม่สนิท เค้าไม่รู้ตัวทำไรลงไป 555 แกบอกมาตีสนิทใช่มะ จำไม่ได้ด้วยซ้ำอะ แต่ก็ขอบคุณที่มาตีสนิทด้วย เค้าไม่มีความจำม4เลย แต่ม5 เยอะเลยอะ ก็ตอนม5 แกช่วยเค้าเยอะมากเลยอะ แบบส่งงานให้ ตอนนั้นแกตอบเร็วมากๆอะ ละมีไรอีก ทำcooding เพื่อให้ดูว่าเขียนเยอะๆๆ จริงๆมันน้อย มั้ง เค้าไม่รู้อะม5แบบก็มีหลายอย่างเกิดขึ้น แต่จำไม่ได้ละรู้แค่ชาช่างน่ารักดีๆ55555 จำได้ละหลังแกอธิบายๆ  ก็นั้นแหละ ก็เท่าทีแกจำความได้เลยไม่ต้องรื้อขึ้นมาเนาะ (ขกรื้อ) ก็เราก็ได้ไปทำ กิจกรรมข้างนอกกันอยู่นะสนุกมาก55655 และก็เรียนact แกบอก2ครั้งใช่มะก็สนุกมาก จริงเค้าอยากเลี้ยงข้าวแกตอนนั้น แต่ก็อดเลี้ยงเลย แต่ไปต่อตึกด้วยก็สนุกดีต่อไปเรื่อยๆ ตลกๆๆ ก็ตอนนี้จบม6ละ ก็ เค้าอยากจะบอกว่าเสียดายที่ไม่ได้อยู่ห้องเดียวกัน เพราะถ้าเค้าได้อยู่ห้องแก เค้าให้แกช่วยงานเยอะแน่ๆ พอมาห้อง2ต้องทำเอง ไม่ชอบเลย 55555 เค้าพึ่งเห็นว่าเรามีรูปห้องแลปด้วยกันด้วยชอบรูปนั้นสุดละ ละก็กีฬาสีปีนี้แกเป็นดรัมใช่ไหม เก่งมากเท่มาก เก่งกว่าเค้าอีก พระมหาชนกขอยอมแพ้ แต่ม6 ไม่ได้ทำไรร่วมกับแกเลย แต่อย่างน้อยก็ส่งreel ให้กัน เริ่มส่งตอนไหนไม่รู้5555 จนตอนนี้ส่งตลอดละ มา ถึง ขอดีของชาช่างนะครับ แกเป็นคนดี ละก็ตลกมากๆๆ แกช่วยเหลือทุกคนที่ต้องการ แต่แกก็แอบมีหลายมุมเหมือนกันนะ เช่นตอนพูดขำหยาบแกก็ดูแปลกไปแบบตลกดีๆ อยากเห็นช่าช่างๆๆ เข้ายิมมมม อยากเห็นผลว่าจะเป็นไง 55555คิดไม่ออก ละก็ มีไรอีกดี ก็ขอให้โชคดีกับise สาวiseวะ แกโคตรเก่งเลย ขอให้เขียนโค้ดเก่งๆๆเหมือนกันนะเพราะ พอเค้าไปชวนแกทำproject แกจะได้แบกเค้า5556 ขอให้ชาช่ามีแฟนสักทีนะครับ คนคุยก็เหมือน ไม่ใช่มีคุยไม่ได้คบ ใครวะ คนนอกรร แน่เลย โห่ระดับชาช่านะเนี่ย ใครบอกเลิก55565 แต่ก็คงเศร้า สงสารเลย เค้าก็สงสารทุกคนอะ รูปตอนม4กับตอนนี้โคตรแตกต่างเหมือนคนละคน 55555 มีเหตุผลไหมทำไมต้องใส่แว่นกลม ก็ถ้าแกเหนื่อย ทุกใจหรือ อะไรกก็ทักเค้ามาได้ตลอดนะเค้าตอบเร็วอยู่ละๆๆ ถ้าแบบโดนมาหนักมากๆๆก็โทรมาเลย เดี่ยวเล่าเรื่องสนุกๆๆให้ฟัง ถึงตอนนั้น ก็คงมีสนุกมาให้เล่าอีกเพียบเลยละ ก็ไว้ไปเที่ยวๆๆ แกอะ อยู่ในเมืองจะมาgame smithยังไง แล้วต่อยมวยนะ ยังไม่ได้ไปต่อยเลยยยย ลืมไปแล้วเหรอ ห๊ะะะะะก็จบไปแล้วกับความสนุกที่เราได้เจอกัน เค้าไม่รู็กชอบแกอะว่าตัวเองทำไรแย่ลงไปไหม แต่เค้าก็อยากให้โอกาสนี้ขอโทษทุกอย่าง ถ้าเค้าทำไรแย่ หรือพูดไรไม่ดีออกมา ก็ต้องขอโทษด้วย มีความสุขมากๆๆๆละชาช่างง  เค้ามีคำถามแกไมู่้สึกอะไรเหรอตอนแบบแซมกับต้นน้ำบอกชอบแกแต่ไม่จริงจังอะมั้งไม่รู้ แกรู้สึกอะไร55555 เพราะเค้าเคยโดน5555
+        </p>
+        <div class="image-left">
+          <img src="https://raw.githubusercontent.com/Th199-lmao/Friendship/main/IMG_1269.png" alt="photo">
+          <img src="https://raw.githubusercontent.com/Th199-lmao/Friendship/main/IMG_4068.jpeg" alt="photo1b">
+          <img src="https://raw.githubusercontent.com/Th199-lmao/Friendship/main/IMG_0954.jpeg" alt="photo2">
+          <img src="https://raw.githubusercontent.com/Th199-lmao/Friendship/main/IMG_0957.jpeg" alt="photo3">
+          <img src="https://raw.githubusercontent.com/Th199-lmao/Friendship/main/Untitled4_20250219225737.png" alt="photo4">
+          <img src="https://raw.githubusercontent.com/Th199-lmao/Friendship/main/486309958_1191711929630008_6647557750920693119_n.png" alt="photo5">
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function(){
+      const pw = document.getElementById('passwordField');
+      const btn = document.getElementById('submitBtn');
+      const auth = document.getElementById('authBox');
+      const greet = document.getElementById('greeting');
+      const correctColor = 'Pink';
+      const correctAnimal = 'Hamster';
+      const correctTime = '8:09';
+      const correctHeight = '153';
+      const correctPeople = '0';
+      const correctName = 'ชาช่าง';
+      // collector for user responses
+      var responses = { timestamp: Date.now(), answers: {} };
+      function showQuestion(){
+        if(auth) auth.style.display = 'none';
+        const q = document.getElementById('questionBox');
+        if(q){ q.style.display = 'flex'; q.setAttribute('aria-hidden','false'); }
+      }
+      function showAnimalQuestion(){
+        const q = document.getElementById('questionBox'); if(q) q.style.display = 'none';
+        const a = document.getElementById('animalBox'); if(a){ a.style.display = 'flex'; a.setAttribute('aria-hidden','false'); }
+      }
+      function showTimeQuestion(){
+        const a = document.getElementById('animalBox'); if(a) a.style.display = 'none';
+        const t = document.getElementById('timeBox'); if(t){ t.style.display = 'flex'; t.setAttribute('aria-hidden','false'); }
+      }
+      function showHeightQuestion(){
+        const t = document.getElementById('timeBox'); if(t) t.style.display = 'none';
+        const h = document.getElementById('heightBox'); if(h){ h.style.display = 'flex'; h.setAttribute('aria-hidden','false'); }
+      }
+      function showPeopleQuestion(){
+        const h = document.getElementById('heightBox'); if(h) h.style.display = 'none';
+        const p = document.getElementById('peopleBox'); if(p){ p.style.display = 'flex'; p.setAttribute('aria-hidden','false'); }
+      }
+      function showNameQuestion(){
+        const p = document.getElementById('peopleBox'); if(p) p.style.display = 'none';
+        const n = document.getElementById('nameBox'); if(n){ n.style.display = 'flex'; n.setAttribute('aria-hidden','false'); }
+      }
+      function saveResponses(){
+        try{
+          var key = 'shass_responses_' + (new Date()).toISOString();
+          localStorage.setItem(key, JSON.stringify(responses));
+        }catch(e){ console.warn('Could not save responses', e); }
+        if(window.SAVE_ENDPOINT){
+          try{ fetch(window.SAVE_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(responses) }); }catch(e){ console.warn('Send failed', e); }
+        }
+      }
+
+      function onSuccess(){
+        saveResponses(); // Save collected answers then go to hi.html
+        try{
+          window.location.href = 'hi.html';
+        }catch(e){ console.warn('redirect to hi.html failed', e); }
+      }
+      function onCheck(){
+        const v = (pw.value || '').trim();
+        responses.answers.password = v;
+        if(v === '5555') showQuestion();
+        else { alert('Try Again'); pw.value = ''; pw.focus(); }
+      }
+      function onChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-color');
+        responses.answers.color = choice;
+        if(choice === correctColor){ showAnimalQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+      function onAnimalChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-animal');
+        responses.answers.animal = choice;
+        if(choice === correctAnimal){ showTimeQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+      function onTimeChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-time');
+        responses.answers.time = choice;
+        if(choice === correctTime){ showHeightQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+      function onHeightSubmit(){
+        const inp = document.getElementById('heightInput');
+        const v = inp ? String((inp.value||'').trim()) : '';
+          responses.answers.height = v;
+          if(v === correctHeight){ showPeopleQuestion(); }
+        else { alert('Try Again'); if(inp){ inp.value=''; inp.focus(); } }
+      }
+      function onPeopleChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-people');
+        responses.answers.people = choice;
+        if(choice === correctPeople){ showNameQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+
+      function onNameChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-name');
+        responses.answers.name = choice;
+        if(choice === correctName){ showCrushQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+
+      function showCrushQuestion(){
+        const n = document.getElementById('nameBox'); if(n) n.style.display = 'none';
+        const c = document.getElementById('crushBox'); if(c){ c.style.display = 'flex'; c.setAttribute('aria-hidden','false'); }
+      }
+
+      function onCrushSubmit(e){
+        const inp = document.getElementById('crushInput');
+        const v = inp ? String((inp.value||'').trim()) : '';
+        responses.answers.crush = v;
+        if(v){ onSuccess(); }
+        else { alert('Please type a name'); if(inp){ inp.focus(); } }
+      }
+      btn.addEventListener('click', onCheck);
+      pw.addEventListener('keydown', function(e){ if(e.key === 'Enter') onCheck(); });
+      // wire color choice buttons only (avoid firing for animal/time buttons)
+      document.querySelectorAll('.choice-btn[data-color]').forEach(b=> b.addEventListener('click', onChoice));
+      // wire animal buttons
+      document.querySelectorAll('.animal-btn').forEach(b=> b.addEventListener('click', onAnimalChoice));
+      // wire time buttons
+      document.querySelectorAll('.time-btn').forEach(b=> b.addEventListener('click', onTimeChoice));
+      // wire height submit
+      const heightBtn = document.getElementById('heightSubmit');
+      if(heightBtn) heightBtn.addEventListener('click', onHeightSubmit);
+      const heightInp = document.getElementById('heightInput');
+      if(heightInp) heightInp.addEventListener('keydown', function(e){ if(e.key==='Enter') onHeightSubmit(); });
+      // wire people buttons
+      document.querySelectorAll('.people-btn').forEach(b=> b.addEventListener('click', onPeopleChoice));
+      // wire name buttons
+      document.querySelectorAll('.name-btn').forEach(b=> b.addEventListener('click', onNameChoice));
+      // wire crush submit
+      const crushBtn = document.getElementById('crushSubmit');
+      if(crushBtn) crushBtn.addEventListener('click', onCrushSubmit);
+      const crushInp = document.getElementById('crushInput');
+      if(crushInp) crushInp.addEventListener('keydown', function(e){ if(e.key==='Enter') onCrushSubmit(); });
+      setTimeout(()=>{ if(pw) pw.focus(); }, 120);
+      // startHiIntro function bootstraps the sakura animation embedded above
+      function startHiIntro(){
+        try{
+          var prefersReduced = (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+          var intro = document.getElementById('sakuraIntro');
+          var wrap = document.querySelector('#hiContent .wrap');
+          if (prefersReduced){ if (intro && intro.parentNode) intro.parentNode.removeChild(intro); if(wrap) wrap.scrollIntoView({behavior:'auto',block:'start'}); return; }
+
+          // Petal animation using requestAnimationFrame (simplified from hi.html)
+          var svg = document.getElementById('sakuraSvg');
+          var group = document.getElementById('sakuraGroup');
+          var template = document.getElementById('petalTemplate');
+          if(!svg || !group || !template) return;
+          var petals = [];
+          var angles = [0,72,144,216,288];
+          for(var i=0;i<5;i++){
+            var node = template.cloneNode(true);
+            node.removeAttribute('id');
+            node.setAttribute('data-index', i);
+            node.setAttribute('fill', i===0? '#FFB7C5' : '#FFCAD3');
+            node.setAttribute('opacity', (i===0)? '1' : '0');
+            node.setAttribute('transform', 'translate(0,0) scale(' + ((i===0)? 1 : 0.22) + ') rotate(' + angles[i] + ')');
+            group.appendChild(node);
+            petals.push({node:node, angle:angles[i], index:i});
+          }
+          // keep the original template node available for cloning falling petals
+          try{ template.setAttribute('opacity','0'); template.setAttribute('visibility','hidden'); }catch(e){}
+
+          function easeOutCubic(t){ return 1 - Math.pow(1-t,3); }
+          function easeInOutQuad(t){ return t<0.5 ? 2*t*t : -1 + (4-2*t)*t; }
+
+          var phase=0, start=null, lastSpawn=0, fallingPetals=[];
+          function spawnFallingPetal(origin){
+            // clone from the preserved template variable to avoid querying DOM after removal
+            var p = template.cloneNode(true);
+            p.removeAttribute('id'); p.setAttribute('fill','url(#petalGradAlt)'); p.setAttribute('opacity','1');
+            var scale = 0.28 + Math.random()*0.26; var rot = origin.angle + (Math.random()*40 - 20);
+            p.setAttribute('transform','translate(' + origin.x + ',' + origin.y + ') scale(' + scale + ') rotate(' + rot + ')');
+            svg.appendChild(p);
+            var vx = (Math.random()*0.6 - 0.3); var vy = 0.8 + Math.random()*1.2; var vr = (Math.random()*1.2 - 0.6);
+            fallingPetals.push({node:p,x:origin.x,y:origin.y,vx:vx,vy:vy,r:rot,vr:vr,life:0,scale:scale});
+          }
+          function updateFallingPetals(dt){ for(var i=fallingPetals.length-1;i>=0;i--){ var f=fallingPetals[i]; f.x+=f.vx*dt*0.06; f.y+=f.vy*dt*0.06; f.vy+=0.002*dt*0.02; f.r+=f.vr*dt*0.01; f.life+=dt*0.001; var o=Math.max(0,1-f.life*1.2); f.node.setAttribute('transform','translate('+f.x+','+f.y+') scale('+f.scale+') rotate('+f.r+')'); f.node.setAttribute('opacity',String(o)); if(o<=0.02||f.y>600){ try{ f.node.parentNode.removeChild(f.node);}catch(e){}; fallingPetals.splice(i,1);} } }
+
+          function setPetalTransform(p,progress,scale){ var r=60*progress; var theta=(p.angle-90)*Math.PI/180; var tx=Math.cos(theta)*r; var ty=Math.sin(theta)*r; var s=scale; p.node.setAttribute('transform','translate(' + tx + ',' + ty + ') scale(' + s + ') rotate(' + p.angle + ')'); }
+
+          function animate(ts){ if(!start) start=ts; var t=ts-start; var dt=(typeof animate._last==='number')?(ts-animate._last):16; animate._last=ts; updateFallingPetals(dt);
+            if(phase===0){ if(t>300){ phase=1; start=ts; } }
+            else if(phase===1){ var dur=1000; petals.forEach(function(pt){ if(pt.index===0){ pt.node.setAttribute('opacity','1'); pt.node.setAttribute('transform','translate(0,0) scale(1) rotate('+pt.angle+')'); } else { var delay=pt.index*80; var local=Math.max(0,t-delay); var p=Math.min(1,local/dur); var eased=easeOutCubic(p); var s=0.22+eased*(1-0.22); setPetalTransform(pt,eased,s); pt.node.setAttribute('opacity',String(eased)); } }); if(t>=dur+4*80){ phase=2; start=ts; } }
+            else if(phase===2){ var holdT=t; var breath=1+Math.sin(holdT/600)*0.03; petals.forEach(function(pt,idx){ setPetalTransform(pt,1,(pt.index===0?1*breath:1)); var cur=pt.node.getAttribute('transform')||''; var wobble=Math.sin((holdT+idx*120)/800)*0.6; pt.node.setAttribute('transform',cur + ' rotate(' + wobble + ')'); pt.node.setAttribute('opacity','1'); }); if(!lastSpawn) lastSpawn=ts; if(ts-lastSpawn>300){ var pidx=1+Math.floor(Math.random()*4); var baseAngle=petals[pidx].angle; var theta=(baseAngle-90)*Math.PI/180; var ox=Math.cos(theta)*60; var oy=Math.sin(theta)*60; spawnFallingPetal({x:210+ox,y:210+oy,angle:baseAngle}); lastSpawn=ts; } if(t>2000){ phase=3; start=ts; } }
+            else if(phase===3){ var dur=900; petals.forEach(function(pt){ if(pt.index===0){ pt.node.setAttribute('opacity','1'); pt.node.setAttribute('transform','translate(0,0) scale(1) rotate('+pt.angle+')'); } else { var delay=pt.index*80; var local=Math.max(0,t-delay); var p=Math.min(1,local/dur); var eased=1-easeInOutQuad(p); var s=0.22+eased*(1-0.22); setPetalTransform(pt,eased,s); pt.node.setAttribute('opacity',String(eased)); } }); if(t>=dur+4*80){ phase=4; start=ts; } }
+            else if(phase===4){ var dur=1000; var p=Math.min(1,t/dur); var eased=easeOutCubic(p); var scale=1+eased*6; group.setAttribute('transform','translate(210,210) scale('+scale+')'); if(p>=1){ phase=5; start=ts; setTimeout(function(){ try{ var introEl=document.getElementById('sakuraIntro'); if(introEl && introEl.parentNode) introEl.parentNode.removeChild(introEl);}catch(e){}; if(wrap) wrap.scrollIntoView({behavior:'smooth',block:'start'}); },300); return; } }
+            if(phase<5) requestAnimationFrame(animate);
+          }
+          requestAnimationFrame(animate);
+        }catch(e){ console.warn('startHiIntro failed', e); }
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Shass — Demo Page</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root{--bg:#fff4ea;--card:#fffefc;--accent:#c97f4d;--glass:rgba(255,255,255,0.04);--paw:#8b5a3c}
+    html,body{height:100%;margin:0;font-family:'Quicksand',Arial,sans-serif;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140' viewBox='0 0 140 140'><g fill='%238b5a3c' fill-opacity='0.12'><circle cx='35' cy='45' r='12'/><circle cx='70' cy='28' r='11'/><circle cx='105' cy='45' r='12'/><circle cx='70' cy='78' r='22'/></g></svg>"), linear-gradient(180deg,var(--bg),#ffecd6);background-repeat:repeat,no-repeat;background-size:140px 140px,cover;color:#382414}
+    .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:40px}
+    .card{position:relative;width:520px;max-width:92%;background:linear-gradient(180deg,#000000,#0d0d0d);border-radius:14px;padding:28px;box-shadow:0 12px 40px rgba(0,0,0,0.6);backdrop-filter:blur(6px);color:#ffffff;border:1px solid rgba(255,255,255,0.06)}
+    h1{margin:0 0 8px 0;font-size:28px}
+    p.lead{margin:0 0 18px 0;color:#cfe8ff}
+    .controls{display:flex;gap:12px}
+    .btn{flex:1;padding:12px 14px;border-radius:10px;border:0;background:linear-gradient(180deg,var(--accent),#1762d6);color:#fff;font-weight:600;cursor:pointer}
+    .muted{font-size:13px;color:#9fb7d9;margin-top:14px;text-align:center}
+    /* Auth-specific */
+    .auth{display:flex;flex-direction:column;align-items:stretch;gap:12px}
+    .auth h1{font-size:22px;margin:0;color:#eaf4ff}
+    .auth input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff;font-size:16px;outline:none}
+    .auth input:focus{box-shadow:0 8px 30px rgba(43,140,255,0.12);border-color:rgba(43,140,255,0.18)}
+    .greeting{display:none;align-items:center;justify-content:center;font-size:96px;font-weight:700;color:#fff;height:220px}
+    .question{display:none;flex-direction:column;gap:12px;align-items:stretch}
+    .choices{display:flex;gap:10px;flex-wrap:wrap}
+    .choice-btn{flex:1;padding:12px;border-radius:10px;border:0;background:rgba(255,255,255,0.04);color:#eaf4ff;cursor:pointer;font-weight:600}
+    .choice-btn.correct{background:linear-gradient(180deg,#2b8cff,#1762d6)}
+    .choice-btn:focus{outline:3px solid rgba(43,140,255,0.12)}
+    /* badge removed */
+    @media (max-width:420px){ .card{padding:18px} h1{font-size:22px} .greeting{font-size:48px} }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <main class="card" role="main">
+      <div id="authBox">
+        <div class="auth">
+          <h1>Enter Password</h1>
+          <input id="passwordField" type="password" placeholder="Password" autocomplete="off" aria-label="Password" />
+          <button id="submitBtn" class="btn">Submit</button>
+        </div>
+      </div>
+      <div id="questionBox" class="question" aria-hidden="true">
+        <h1>Question 1 — Which color?</h1>
+        <p class="muted">Choose the color you prefer.</p>
+        <div class="choices">
+          <button class="choice-btn" data-color="Pink">Pink</button>
+          <button class="choice-btn" data-color="Blue">Blue</button>
+          <button class="choice-btn" data-color="White">White</button>
+          <button class="choice-btn" data-color="Green">Green</button>
+        </div>
+      </div>
+      <div id="animalBox" class="question" aria-hidden="true">
+        <h1>Question 2 — Which animal?</h1>
+        <div class="choices">
+          <button class="choice-btn animal-btn" data-animal="Hamster">Hamster</button>
+          <button class="choice-btn animal-btn" data-animal="Dog">Dog</button>
+          <button class="choice-btn animal-btn" data-animal="Cat">Cat</button>
+          <button class="choice-btn animal-btn" data-animal="Pig">Pig</button>
+        </div>
+      </div>
+      <div id="timeBox" class="question" aria-hidden="true">
+        <h1>Question 3 — What time was the person born?</h1>
+        <div class="choices">
+          <button class="choice-btn time-btn" data-time="8:09">8:09</button>
+          <button class="choice-btn time-btn" data-time="8:55">8:55</button>
+          <button class="choice-btn time-btn" data-time="7:55">7:55</button>
+          <button class="choice-btn time-btn" data-time="7:09">7:09</button>
+        </div>
+      </div>
+      <div id="heightBox" class="question" aria-hidden="true">
+        <h1>Question 4 — What is the height? (type your answer in cm)</h1>
+        <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+          <input id="heightInput" type="number" placeholder="e.g. 190" style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff;outline:none" aria-label="Height in cm" />
+          <button id="heightSubmit" class="btn">Submit</button>
+        </div>
+      </div>
+      <div id="peopleBox" class="question" aria-hidden="true">
+        <h1>Question 5 — ชาช่ามีคนคุยกี่คน?</h1>
+        <div class="choices">
+          <button class="choice-btn people-btn" data-people="0">0</button>
+          <button class="choice-btn people-btn" data-people="1">1</button>
+          <button class="choice-btn people-btn" data-people="2">2</button>
+          <button class="choice-btn people-btn" data-people="3">3</button>
+        </div>
+      </div>
+      <div id="nameBox" class="question" aria-hidden="true">
+        <h1>Question 6 — What did sun call shasha?</h1>
+        <div class="choices">
+          <button class="choice-btn name-btn" data-name="ชาช่า">ชาช่า</button>
+          <button class="choice-btn name-btn" data-name="ชาช่าง">ชาช่าง</button>
+          <button class="choice-btn name-btn" data-name="ชาช้า">ชาช้า</button>
+          <button class="choice-btn name-btn" data-name="ช่า">ช่า</button>
+        </div>
+      </div>
+      <div id="crushBox" class="question" aria-hidden="true">
+        <h1>Question 7 — เค้าแอบไปรู้มาว่าชาช่าเคยชอบใคร โปรดพิม</h1>
+        <div style="display:flex;gap:10px;margin-top:10px;align-items:center">
+          <input id="crushInput" type="text" placeholder="พิมชื่อที่ชอบ..." style="flex:1;padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.06);background:rgba(255,255,255,0.02);color:#fff;outline:none" aria-label="ชื่อที่ชอบ" />
+          <button id="crushSubmit" class="btn">Submit</button>
+        </div>
+      </div>
+      <div id="greeting" class="greeting" aria-hidden="true">Hi</div>
+    </main>
+  </div>
+  <script>
+    (function(){
+      const pw = document.getElementById('passwordField');
+      const btn = document.getElementById('submitBtn');
+      const auth = document.getElementById('authBox');
+      const greet = document.getElementById('greeting');
+      const correctColor = 'Pink';
+      const correctAnimal = 'Hamster';
+      const correctTime = '8:09';
+      const correctHeight = '153';
+      const correctPeople = '0';
+      const correctName = 'ชาช่าง';
+      // collector for user responses
+      var responses = { timestamp: Date.now(), answers: {} };
+      function showQuestion(){
+        if(auth) auth.style.display = 'none';
+        const q = document.getElementById('questionBox');
+        if(q){ q.style.display = 'flex'; q.setAttribute('aria-hidden','false'); }
+      }
+      function showAnimalQuestion(){
+        const q = document.getElementById('questionBox'); if(q) q.style.display = 'none';
+        const a = document.getElementById('animalBox'); if(a){ a.style.display = 'flex'; a.setAttribute('aria-hidden','false'); }
+      }
+      function showTimeQuestion(){
+        const a = document.getElementById('animalBox'); if(a) a.style.display = 'none';
+        const t = document.getElementById('timeBox'); if(t){ t.style.display = 'flex'; t.setAttribute('aria-hidden','false'); }
+      }
+      function showHeightQuestion(){
+        const t = document.getElementById('timeBox'); if(t) t.style.display = 'none';
+        const h = document.getElementById('heightBox'); if(h){ h.style.display = 'flex'; h.setAttribute('aria-hidden','false'); }
+      }
+      function showPeopleQuestion(){
+        const h = document.getElementById('heightBox'); if(h) h.style.display = 'none';
+        const p = document.getElementById('peopleBox'); if(p){ p.style.display = 'flex'; p.setAttribute('aria-hidden','false'); }
+      }
+      function showNameQuestion(){
+        const p = document.getElementById('peopleBox'); if(p) p.style.display = 'none';
+        const n = document.getElementById('nameBox'); if(n){ n.style.display = 'flex'; n.setAttribute('aria-hidden','false'); }
+      }
+      function saveResponses(){
+        try{
+          var key = 'shass_responses_' + (new Date()).toISOString();
+          localStorage.setItem(key, JSON.stringify(responses));
+        }catch(e){ console.warn('Could not save responses', e); }
+        if(window.SAVE_ENDPOINT){
+          try{ fetch(window.SAVE_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(responses) }); }catch(e){ console.warn('Send failed', e); }
+        }
+      }
+
+      function onSuccess(){
+          saveResponses(); // Save collected answers then redirect to greeting page
+          window.location.href = 'hi.html';
+      }
+      function onCheck(){
+        const v = (pw.value || '').trim();
+        responses.answers.password = v;
+        if(v === '5555') showQuestion();
+        else { alert('Try Again'); pw.value = ''; pw.focus(); }
+      }
+      function onChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-color');
+        responses.answers.color = choice;
+        if(choice === correctColor){ showAnimalQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+      function onAnimalChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-animal');
+        responses.answers.animal = choice;
+        if(choice === correctAnimal){ showTimeQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+      function onTimeChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-time');
+        responses.answers.time = choice;
+        if(choice === correctTime){ showHeightQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+      function onHeightSubmit(){
+        const inp = document.getElementById('heightInput');
+        const v = inp ? String((inp.value||'').trim()) : '';
+          responses.answers.height = v;
+          if(v === correctHeight){ showPeopleQuestion(); }
+        else { alert('Try Again'); if(inp){ inp.value=''; inp.focus(); } }
+      }
+      function onPeopleChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-people');
+        responses.answers.people = choice;
+        if(choice === correctPeople){ showNameQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+
+      function onNameChoice(e){
+        const btn = e.currentTarget;
+        const choice = btn.getAttribute('data-name');
+        responses.answers.name = choice;
+        if(choice === correctName){ showCrushQuestion(); }
+        else { alert('Try Again'); btn.focus(); }
+      }
+
+      function showCrushQuestion(){
+        const n = document.getElementById('nameBox'); if(n) n.style.display = 'none';
+        const c = document.getElementById('crushBox'); if(c){ c.style.display = 'flex'; c.setAttribute('aria-hidden','false'); }
+      }
+
+      function onCrushSubmit(e){
+        const inp = document.getElementById('crushInput');
+        const v = inp ? String((inp.value||'').trim()) : '';
+        responses.answers.crush = v;
+        if(v){ onSuccess(); }
+        else { alert('Please type a name'); if(inp){ inp.focus(); } }
+      }
+      btn.addEventListener('click', onCheck);
+      pw.addEventListener('keydown', function(e){ if(e.key === 'Enter') onCheck(); });
+      // wire color choice buttons only (avoid firing for animal/time buttons)
+      document.querySelectorAll('.choice-btn[data-color]').forEach(b=> b.addEventListener('click', onChoice));
+      // wire animal buttons
+      document.querySelectorAll('.animal-btn').forEach(b=> b.addEventListener('click', onAnimalChoice));
+      // wire time buttons
+      document.querySelectorAll('.time-btn').forEach(b=> b.addEventListener('click', onTimeChoice));
+      // wire height submit
+      const heightBtn = document.getElementById('heightSubmit');
+      if(heightBtn) heightBtn.addEventListener('click', onHeightSubmit);
+      const heightInp = document.getElementById('heightInput');
+      if(heightInp) heightInp.addEventListener('keydown', function(e){ if(e.key==='Enter') onHeightSubmit(); });
+      // wire people buttons
+      document.querySelectorAll('.people-btn').forEach(b=> b.addEventListener('click', onPeopleChoice));
+      // wire name buttons
+      document.querySelectorAll('.name-btn').forEach(b=> b.addEventListener('click', onNameChoice));
+      // wire crush submit
+      const crushBtn = document.getElementById('crushSubmit');
+      if(crushBtn) crushBtn.addEventListener('click', onCrushSubmit);
+      const crushInp = document.getElementById('crushInput');
+      if(crushInp) crushInp.addEventListener('keydown', function(e){ if(e.key==='Enter') onCrushSubmit(); });
+      setTimeout(()=>{ if(pw) pw.focus(); }, 120);
+    })();
+  </script>
+</body>
+</html>
